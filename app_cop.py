@@ -184,7 +184,7 @@ Esta calculadora forma parte del sistema *Retail Shift Auditor v3.2*, que permit
 st.markdown(
     """
     <div class="footer">
-        Desarrollado por <a href="https://www.linkedin.com/in/joseluisasenjo" target="_blank">José Luis Asenjo</a>
+        Desarrollado por <a href="https://www.linkedin.com/in/joseluisasenjo" target="_blank">Jose Luis Asenjo</a>
     </div>
     """,
     unsafe_allow_html=True
