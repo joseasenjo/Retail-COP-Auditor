@@ -4,19 +4,21 @@ import pandas as pd
 
 # Configuración inicial de la página
 st.set_page_config(
-    page_title="Retail COP Calculator | Hemorragia de Margen",
-    page_icon="COP",
+    page_title="Retail-COP-Auditor | Calculadora de Coste de Oportunidad",
+    page_icon="",  # Sin favicon
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS personalizados para darle un toque premium y oscuro
+# Estilos CSS personalizados (sin emojis, más sobrio)
 st.markdown("""
 <style>
-    .big-font { font-size: 24px !important; font-weight: bold; color: #f8fafc; }
-    .alert-red { color: #ef4444; font-size: 42px; font-weight: 900; line-height: 1.1; }
-    .metric-box { background-color: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; }
-    .cta-box { background: linear-gradient(135deg, #0f1423 0%, #1e1b4b 100%); padding: 30px; border-radius: 15px; border: 1px solid #4f46e5; text-align: center; margin-top: 50px; }
+    .big-font { font-size: 24px !important; font-weight: bold; color: #1e293b; }
+    .alert-red { color: #dc2626; font-size: 42px; font-weight: 900; line-height: 1.1; }
+    .metric-box { background-color: #f1f5f9; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; }
+    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 14px; }
+    .footer a { color: #2563eb; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -30,7 +32,7 @@ BENCHMARK_SECTORES = {
     "deportes":      {"nombre": "Deporte & Outdoor",               "conv": 26.0, "upt": 2.10, "aov": 42.00,  "traf_opt_empleado": 16},
 }
 
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3593/3593463.png", width=60)
+st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3593/3593463.png", width=60)  # Mantengo el logo del sidebar, pero si quieres lo quitas
 st.sidebar.title("Simulador de Pista")
 st.sidebar.markdown("Ajusta los parámetros para simular **1 HORA** de actividad en tu tienda.")
 
@@ -60,10 +62,8 @@ ratio_actual = trafico / personal if personal > 0 else trafico
 # 1. COP de Tráfico (Infracobertura)
 clientes_perdidos = 0
 if ratio_actual > bm["traf_opt_empleado"]:
-    # Exceso de tráfico que los vendedores no pudieron atender
     capacidad_optima = personal * bm["traf_opt_empleado"]
     trafico_exceso = trafico - capacidad_optima
-    # Asumimos que de ese exceso habríamos convertido según el benchmark
     clientes_perdidos = trafico_exceso * (bm["conv"] / 100)
 
 cop_trafico = max(0, clientes_perdidos * bm["aov"] * margen)
@@ -87,37 +87,37 @@ ingreso_real = transacciones * aov_real
 margen_real_rescatado = ingreso_real * margen
 margen_potencial_ideal = margen_real_rescatado + cop_total
 
-st.title("🚨 Calculadora de Hemorragia de Margen (COP)")
-st.markdown(f"**Análisis de Ineficiencia en Tiempo Real** | Sector: `{bm['nombre']}`")
+st.title("Retail-COP-Auditor | Calculadora de Coste de Oportunidad")
+st.markdown(f"**Analisis de ineficiencias en tiempo real** | Sector: `{bm['nombre']}`")
 
 st.markdown("""
-Esta herramienta te muestra el dinero que tu tienda **pierde cada hora** al no alcanzar los estándares de tu sector por falta de personal en horas punta, o carencias en técnicas de cierre y venta cruzada.
+Esta herramienta muestra el dinero que tu tienda pierde cada hora al no alcanzar los estándares del sector, ya sea por falta de personal en horas punta o por carencias en técnicas de cierre y venta cruzada.
 """)
 
 col1, col2 = st.columns([1, 2])
 
 with col1:
     st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#94a3b8; font-size:14px; font-weight:bold; margin-bottom:0px;'>COSTE DE OPORTUNIDAD (1 HORA)</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#475569; font-size:14px; font-weight:bold; margin-bottom:0px;'>COSTE DE OPORTUNIDAD (1 HORA)</p>", unsafe_allow_html=True)
     st.markdown(f"<p class='alert-red'>-{cop_total:,.2f} €</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:#cbd5e1; font-size:13px;'>Margen neto esfumado en solo 60 minutos.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#475569; font-size:13px;'>Margen neto no capturado en 60 minutos.</p>", unsafe_allow_html=True)
     
     impacto_pct = (cop_total / margen_potencial_ideal * 100) if margen_potencial_ideal > 0 else 0
     st.progress(min(1.0, impacto_pct/100))
-    st.markdown(f"<p style='color:#f59e0b; font-size:12px; font-weight:bold;'>El {impacto_pct:.1f}% de tu beneficio potencial se ha perdido.</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#d97706; font-size:12px; font-weight:bold;'>El {impacto_pct:.1f}% del beneficio potencial se ha perdido.</p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
     st.write("")
     
     # Gráfico de Gauge (Termómetro de Saturación)
-    estado_saturacion = "Óptimo" if ratio_actual <= bm["traf_opt_empleado"] else "Colapsado"
+    estado_saturacion = "Optimo" if ratio_actual <= bm["traf_opt_empleado"] else "Colapsado"
     color_gauge = "green" if ratio_actual <= bm["traf_opt_empleado"] else "red"
     
     fig_gauge = go.Figure(go.Indicator(
         mode = "gauge+number",
         value = ratio_actual,
         domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': "Densidad de Pista (Clientes / Vendedor)", 'font': {'size': 14, 'color': '#cbd5e1'}},
+        title = {'text': "Densidad de Pista (Clientes / Vendedor)", 'font': {'size': 14, 'color': '#1e293b'}},
         gauge = {
             'axis': {'range': [0, bm["traf_opt_empleado"] * 2], 'tickwidth': 1, 'tickcolor': "darkblue"},
             'bar': {'color': color_gauge},
@@ -130,74 +130,75 @@ with col1:
             'threshold': {'line': {'color': "white", 'width': 3}, 'thickness': 0.75, 'value': bm["traf_opt_empleado"]}
         }
     ))
-    fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20), paper_bgcolor="rgba(0,0,0,0)", font={'color': "#f8fafc"})
+    fig_gauge.update_layout(height=250, margin=dict(l=20, r=20, t=30, b=20), paper_bgcolor="rgba(0,0,0,0)", font={'color': "#1e293b"})
     st.plotly_chart(fig_gauge, use_container_width=True)
 
 with col2:
-    st.markdown("### 💸 El viaje de tu Margen Bruto")
-    st.markdown("Observa cómo las ineficiencias erosionan tu beneficio ideal paso a paso.")
+    st.markdown("### Desglose del margen potencial vs. real")
+    st.markdown("Observa cómo las ineficiencias erosionan el beneficio ideal paso a paso.")
     
     fig_waterfall = go.Figure(go.Waterfall(
         name = "Margen", orientation = "v",
         measure = ["relative", "relative", "relative", "relative", "total"],
-        x = ["Margen Ideal", "Infracobertura<br>(Falta Personal)", "Cross-Selling<br>(Pocos Artículos)", "Up-Selling<br>(Ticket Bajo)", "Margen Real<br>Capturado"],
+        x = ["Margen Ideal", "Infracobertura<br>(Falta Personal)", "Cross-Selling<br>(Pocos Articulos)", "Up-Selling<br>(Ticket Bajo)", "Margen Real<br>Capturado"],
         textposition = "outside",
         text = [f"{margen_potencial_ideal:,.0f}€", f"-{cop_trafico:,.0f}€", f"-{cop_cross:,.0f}€", f"-{cop_up:,.0f}€", f"{margen_real_rescatado:,.0f}€"],
         y = [margen_potencial_ideal, -cop_trafico, -cop_cross, -cop_up, margen_real_rescatado],
         connector = {"line":{"color":"#334155"}},
-        decreasing = {"marker":{"color":"#ef4444"}},
-        increasing = {"marker":{"color":"#10b981"}},
-        totals = {"marker":{"color":"#3b82f6"}}
+        decreasing = {"marker":{"color":"#dc2626"}},
+        increasing = {"marker":{"color":"#16a34a"}},
+        totals = {"marker":{"color":"#2563eb"}}
     ))
     fig_waterfall.update_layout(
         height=400,
         margin=dict(l=20, r=20, t=20, b=40),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#94a3b8"),
+        font=dict(color="#1e293b"),
         showlegend=False
     )
     st.plotly_chart(fig_waterfall, use_container_width=True)
 
 st.markdown("---")
-st.markdown("### 🔬 Desglose del Diagnóstico")
+st.markdown("### Desglose del diagnostico")
 c1, c2, c3 = st.columns(3)
 
 with c1:
-    with st.expander("🏃 Tráfico Perdido", expanded=True):
+    with st.expander("Trafico Perdido", expanded=True):
         st.write(f"**COP: -{cop_trafico:,.2f} €**")
         if cop_trafico > 0:
-            st.write(f"El ratio actual es de **{ratio_actual:.1f}** clientes por empleado, superando el límite del sector ({bm['traf_opt_empleado']}). Se estima que **{clientes_perdidos:.1f} clientes** se fueron sin comprar por falta de atención.")
+            st.write(f"El ratio actual es de **{ratio_actual:.1f}** clientes por empleado, superando el limite del sector ({bm['traf_opt_empleado']}). Se estima que **{clientes_perdidos:.1f} clientes** se fueron sin comprar por falta de atencion.")
         else:
-            st.write("✅ La tienda está bien dimensionada para el tráfico actual.")
+            st.write("La tienda esta bien dimensionada para el trafico actual.")
 
 with c2:
-    with st.expander("🧩 Cross-Selling", expanded=True):
+    with st.expander("Cross-Selling", expanded=True):
         st.write(f"**COP: -{cop_cross:,.2f} €**")
         if gap_upt > 0:
-            st.write(f"Tu equipo está vendiendo **{upt_real:.2f}** artículos por ticket, cuando el estándar del sector es **{bm['upt']}**. Faltó ofrecer artículos complementarios en el mostrador.")
+            st.write(f"Tu equipo esta vendiendo **{upt_real:.2f}** articulos por ticket, cuando el estandar del sector es **{bm['upt']}**. Falto ofrecer articulos complementarios en el mostrador.")
         else:
-            st.write("✅ Excelente ratio de artículos por ticket.")
+            st.write("Excelente ratio de articulos por ticket.")
 
 with c3:
-    with st.expander("⬆️ Up-Selling", expanded=True):
+    with st.expander("Up-Selling", expanded=True):
         st.write(f"**COP: -{cop_up:,.2f} €**")
         if gap_precio > 0:
-            st.write(f"El valor medio de tus artículos vendidos es más bajo de lo esperado. Tu AOV actual es de **{aov_real:.2f}€** vs **{bm['aov']:.2f}€** (benchmark). Se están vendiendo artículos baratos en lugar de gama premium.")
+            st.write(f"El valor medio de tus articulos vendidos es mas bajo de lo esperado. Tu AOV actual es de **{aov_real:.2f}€** vs **{bm['aov']:.2f}€** (benchmark). Se estan vendiendo articulos baratos en lugar de gama premium.")
         else:
-            st.write("✅ Cierre de ventas de alto valor en línea con el sector.")
+            st.write("Cierre de ventas de alto valor en linea con el sector.")
 
-# CALL TO ACTION (Lead Magnet para LinkedIn)
+# Nota técnica final (sin CTA agresivo)
+st.markdown("---")
+st.markdown("""
+**Nota tecnica:**  
+Esta calculadora forma parte del sistema *Retail Shift Auditor v3.2*, que permite analizar el rendimiento de cada turno y empleado a partir de datos de TPV y benchmarks sectoriales. Para mas informacion o solicitar una auditoria personalizada, contacta al desarrollador.
+""")
+
+# Footer con desarrollador y enlace a LinkedIn
 st.markdown(
     """
-    <div class="cta-box">
-        <h2 style="color:white; margin-bottom:10px;">¿Esto es solo una hora. ¿Cuánto estás perdiendo al mes?</h2>
-        <p style="color:#94a3b8; font-size:16px;">
-            El <strong>Retail Shift Auditor v3.2</strong> es un motor analítico avanzado que audita tu TPV de forma masiva, cruza datos con inteligencia de sector e identifica carencias (Skill/Will) empleado a empleado.
-        </p>
-        <a href="https://www.linkedin.com/in/joseluisasenjo" target="_blank" style="display:inline-block; background-color:#3b82f6; color:white; padding:12px 25px; border-radius:8px; text-decoration:none; font-weight:bold; margin-top:15px; border:1px solid #60a5fa;">
-            Conectar en LinkedIn para solicitar Auditoría
-        </a>
+    <div class="footer">
+        Desarrollado por <a href="https://www.linkedin.com/in/joseluisasenjo" target="_blank">José Luis Asenjo</a>
     </div>
     """,
     unsafe_allow_html=True
