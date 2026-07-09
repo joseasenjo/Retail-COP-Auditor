@@ -5,7 +5,7 @@ import pandas as pd
 # Configuración inicial de la página
 st.set_page_config(
     page_title="Retail COP Calculator | Hemorragia de Margen",
-    page_icon="🩸",
+    page_icon="COP",
     layout="wide",
     initial_sidebar_state="expanded"
 )
