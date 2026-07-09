@@ -5,12 +5,12 @@ import pandas as pd
 # Configuración inicial de la página
 st.set_page_config(
     page_title="Retail-COP-Auditor | Calculadora de Coste de Oportunidad",
-    page_icon="",
+    page_icon="",  # Sin favicon
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS personalizados
+# Estilos CSS personalizados (sin emojis, más sobrio)
 st.markdown("""
 <style>
     .big-font { font-size: 24px !important; font-weight: bold; color: #1e293b; }
@@ -103,7 +103,7 @@ with col1:
     st.markdown(f"<p style='color:#475569; font-size:13px;'>Margen neto no capturado en 60 minutos.</p>", unsafe_allow_html=True)
     
     impacto_pct = (cop_total / margen_potencial_ideal * 100) if margen_potencial_ideal > 0 else 0
-    # Barra de progreso eliminada, solo mostramos el texto del porcentaje
+    # st.progress ELIMINADA - ya no aparece la barra gris
     st.markdown(f"<p style='color:#d97706; font-size:12px; font-weight:bold;'>El {impacto_pct:.1f}% del beneficio potencial se ha perdido.</p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
@@ -135,7 +135,7 @@ with col1:
 
 with col2:
     st.markdown("### Desglose del margen potencial vs. real")
-    st.markdown("Observa cómo las ineficiencias erosionan el margen potencial.")
+    st.markdown("Observa cómo las ineficiencias erosionan el beneficio ideal paso a paso.")
     
     fig_waterfall = go.Figure(go.Waterfall(
         name = "Margen", orientation = "v",
