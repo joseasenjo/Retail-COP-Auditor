@@ -2,23 +2,25 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 
-# Configuración inicial de la página
 st.set_page_config(
     page_title="Retail-COP-Auditor | Calculadora de Coste de Oportunidad",
-    page_icon="",  # Sin favicon
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS personalizados (sin emojis, más sobrio)
 st.markdown("""
 <style>
     .big-font { font-size: 24px !important; font-weight: bold; color: #1e293b; }
     .alert-red { color: #dc2626; font-size: 42px; font-weight: 900; line-height: 1.1; }
-    .metric-box { background-color: #f1f5f9; padding: 20px; border-radius: 10px; border: 1px solid #cbd5e1; }
-    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 14px; }
+    .metric-box { background-color: #f1f5f9; padding: 20px; border-radius: 10px; border: none; }
+    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: none; color: #64748b; font-size: 14px; }
     .footer a { color: #2563eb; text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
+    /* Eliminar bordes y separadores en general */
+    hr { display: none; }
+    .stMarkdown hr { display: none; }
+    div[data-testid="stDecoration"] { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -36,16 +38,14 @@ st.sidebar.image("https://cdn-icons-png.flaticon.com/512/3593/3593463.png", widt
 st.sidebar.title("Simulador de Pista")
 st.sidebar.markdown("Ajusta los parámetros para simular **1 HORA** de actividad en tu tienda.")
 
-# Selector de Sector
 sector_keys = list(BENCHMARK_SECTORES.keys())
 sector_names = [BENCHMARK_SECTORES[k]["nombre"] for k in sector_keys]
 selected_name = st.sidebar.selectbox("1. Elige tu sector comercial:", sector_names)
 sector_key = sector_keys[sector_names.index(selected_name)]
 bm = BENCHMARK_SECTORES[sector_key]
 
-st.sidebar.markdown("---")
+st.sidebar.markdown("---")  # Este separador en sidebar no afecta al contenido principal, lo dejamos.
 
-# Inputs Interactivos
 trafico = st.sidebar.slider("2. Tráfico (visitantes esta hora):", min_value=10, max_value=200, value=45, step=5)
 personal = st.sidebar.slider("3. Vendedores en tienda:", min_value=1, max_value=10, value=2, step=1)
 transacciones = st.sidebar.slider("4. Transacciones (tickets cobrados):", min_value=0, max_value=100, value=8, step=1)
@@ -55,11 +55,9 @@ margen_pct = st.sidebar.slider("7. Margen Bruto de tu producto (%):", min_value=
 
 margen = margen_pct / 100.0
 
-# Variables de la hora
 conv_real = (transacciones / trafico * 100) if trafico > 0 else 0
 ratio_actual = trafico / personal if personal > 0 else trafico
 
-# 1. COP de Tráfico (Infracobertura)
 clientes_perdidos = 0
 if ratio_actual > bm["traf_opt_empleado"]:
     capacidad_optima = personal * bm["traf_opt_empleado"]
@@ -68,21 +66,17 @@ if ratio_actual > bm["traf_opt_empleado"]:
 
 cop_trafico = max(0, clientes_perdidos * bm["aov"] * margen)
 
-# 2. COP de Cross-Selling (UPT)
 precio_medio_art_real = aov_real / upt_real if upt_real > 0 else 0
 gap_upt = max(0, bm["upt"] - upt_real)
 cop_cross = transacciones * gap_upt * precio_medio_art_real * margen
 
-# 3. COP de Up-Selling (AOV)
 precio_medio_art_bm = bm["aov"] / bm["upt"] if bm["upt"] > 0 else 0
 gap_precio = max(0, precio_medio_art_bm - precio_medio_art_real)
 unidades_totales = transacciones * upt_real
 cop_up = unidades_totales * gap_precio * margen
 
-# Totales
 cop_total = cop_trafico + cop_cross + cop_up
 
-# Ingreso y Margen Real
 ingreso_real = transacciones * aov_real
 margen_real_rescatado = ingreso_real * margen
 margen_potencial_ideal = margen_real_rescatado + cop_total
@@ -103,13 +97,9 @@ with col1:
     st.markdown(f"<p style='color:#475569; font-size:13px;'>Margen neto no capturado en 60 minutos.</p>", unsafe_allow_html=True)
     
     impacto_pct = (cop_total / margen_potencial_ideal * 100) if margen_potencial_ideal > 0 else 0
-    # st.progress ELIMINADA - ya no aparece la barra gris
     st.markdown(f"<p style='color:#d97706; font-size:12px; font-weight:bold;'>El {impacto_pct:.1f}% del beneficio potencial se ha perdido.</p>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
-    st.write("")
-    
-    # Gráfico de Gauge (Termómetro de Saturación)
     estado_saturacion = "Optimo" if ratio_actual <= bm["traf_opt_empleado"] else "Colapsado"
     color_gauge = "green" if ratio_actual <= bm["traf_opt_empleado"] else "red"
     
@@ -159,7 +149,6 @@ with col2:
     )
     st.plotly_chart(fig_waterfall, use_container_width=True)
 
-st.markdown("---")
 st.markdown("### Desglose del diagnostico")
 c1, c2, c3 = st.columns(3)
 
@@ -187,14 +176,11 @@ with c3:
         else:
             st.write("Cierre de ventas de alto valor en linea con el sector.")
 
-# Nota técnica final
-st.markdown("---")
 st.markdown("""
 **Nota tecnica:**  
 Esta calculadora forma parte del sistema *Retail Shift Auditor v3.2*, que permite analizar el rendimiento de cada turno y empleado a partir de datos de TPV y benchmarks sectoriales. Para mas informacion o solicitar una auditoria personalizada, contacta al desarrollador.
 """)
 
-# Footer con desarrollador y enlace a LinkedIn
 st.markdown(
     """
     <div class="footer">
