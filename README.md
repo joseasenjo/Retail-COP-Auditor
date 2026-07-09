@@ -201,5 +201,5 @@ Soporte para múltiples tiendas y comparativas.
 CRÉDITOS
 
 Desarrollado por José Luis Asenjo
-LinkedIn: https://www.linkedin.com/in/joseluisasenjo
+ https://www.linkedin.com/in/joseluisasenjo
 
