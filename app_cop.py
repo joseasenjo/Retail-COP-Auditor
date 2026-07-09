@@ -91,7 +91,7 @@ Esta herramienta muestra el dinero que tu tienda pierde cada hora al no alcanzar
 col1, col2 = st.columns([1, 2])
 
 with col1:
-    st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
+    
     st.markdown("<p style='color:#475569; font-size:14px; font-weight:bold; margin-bottom:0px;'>COSTE DE OPORTUNIDAD (1 HORA)</p>", unsafe_allow_html=True)
     st.markdown(f"<p class='alert-red'>-{cop_total:,.2f} €</p>", unsafe_allow_html=True)
     st.markdown(f"<p style='color:#475569; font-size:13px;'>Margen neto no capturado en 60 minutos.</p>", unsafe_allow_html=True)
